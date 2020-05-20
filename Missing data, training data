@@ -1,0 +1,251 @@
+import pandas as pd
+import os
+from sklearn.neighbors import KNeighborsClassifier
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+import random
+import math
+#from scipy import stats
+from sklearn.metrics import accuracy_score
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.metrics import explained_variance_score
+from sklearn import preprocessing
+from numpy import nan
+
+#This is my headers
+names =["buying","maint","doors","persons","lug_boot","safety","ClassValues"]
+
+os.chdir("C:/Users/jor14/Dropbox/Arduino projects/MachineLearning")
+data1 = pd.read_csv("car.data", header=None, skipinitialspace=True,
+                    names=names, na_values=["?"]) # Reads the file in my directory
+#pandas.read_csv(filepath_or_buffer, sep=', ', delimiter=None, header='infer', names=None, index_col=None, ....)
+
+
+
+
+# This is the code for part 3    Infer means we do have headers, therefor names is also None
+data3 = pd.read_csv("student-mat.csv",header='infer', sep = ';', skipinitialspace=True,
+                    names=None, na_values=["?"])
+
+
+
+
+
+
+# This part is for part 2  We needed a regular experssion to make the headers line up. We need 2 white space r'\s+'
+names =["mpg","cylinders","displacement","horsepower","weight","acceleration","model","origin","car name"]
+data2 = pd.read_csv("auto-mpg.data",header=None,  sep = r'\s+',skipinitialspace=True,
+                    names=names, na_values=["?"])
+# This helps us see how many columns we want to see
+pd.set_option('max_columns', 9)
+pd.set_option('max_rows', 392)
+
+############################### make data 2 into cat.codes############################################################
+
+data2["car name"] = data2["car name"].astype('category')
+data2["car name"] = data2["car name"].cat.codes
+
+#print(data2)
+
+
+
+####################################### Training the data for student grades  #########################################
+features = data3[['school','address','famsize','Pstatus','Mjob','Fjob','reason',
+                                                                       'guardian',
+                  'schoolsup','famsup','paid','activities','nursery','higher',
+                  'internet','romantic']]
+targets = data3['G3']
+
+
+
+
+
+
+
+#print(data1)
+
+####################### make data3 into cat.codes to read its information ######################
+
+data3["school"] = data3["school"].astype('category')
+data3["school"] = data3["school"].cat.codes
+
+data3["sex"] = data3["sex"].astype('category')
+data3["sex"] = data3["sex"].cat.codes
+
+
+
+data3["address"] = data3["address"].astype('category')
+data3["address"] = data3["address"].cat.codes
+
+data3["famsize"] = data3["famsize"].astype('category')
+data3["famsize"] = data3["famsize"].cat.codes
+
+data3["Pstatus"] = data3["Pstatus"].astype('category')
+data3["Pstatus"] = data3["Pstatus"].cat.codes
+
+data3["Mjob"] = data3["Mjob"].astype('category')
+data3["Mjob"] = data3["Mjob"].cat.codes
+
+data3["Fjob"] = data3["Fjob"].astype('category')
+data3["Fjob"] = data3["Fjob"].cat.codes
+
+data3["reason"] = data3["reason"].astype('category')
+data3["reason"] = data3["reason"].cat.codes
+
+data3["guardian"] = data3["guardian"].astype('category')
+data3["guardian"] = data3["guardian"].cat.codes
+
+data3["schoolsup"] = data3["schoolsup"].astype('category')
+data3["schoolsup"] = data3["schoolsup"].cat.codes
+
+data3["famsup"] = data3["famsup"].astype('category')
+data3["famsup"] = data3["famsup"].cat.codes
+
+data3["paid"] = data3["paid"].astype('category')
+data3["paid"] = data3["paid"].cat.codes
+
+data3["activities"] = data3["activities"].astype('category')
+data3["activities"] = data3["activities"].cat.codes
+
+data3["nursery"] = data3["nursery"].astype('category')
+data3["nursery"] = data3["nursery"].cat.codes
+
+data3["higher"] = data3["higher"].astype('category')
+data3["higher"] = data3["higher"].cat.codes
+
+data3["internet"] = data3["internet"].astype('category')
+data3["internet"] = data3["internet"].cat.codes
+
+data3["romantic"] = data3["romantic"].astype('category')
+data3["romantic"] = data3["romantic"].cat.codes
+
+
+#print(data3)
+
+
+#print(data1.dtypes) # Shows me what type of data this is
+
+data1["buying"] = data1["buying"].astype('category')
+data1["buying"] = data1["buying"].cat.codes
+
+data1["maint"] = data1["maint"].astype('category')
+data1["maint"] = data1["maint"].cat.codes
+
+data1["doors"] = data1["doors"].astype('category')
+data1["doors"] = data1["doors"].cat.codes
+
+data1["persons"] = data1["persons"].astype('category')
+data1["persons"] = data1["persons"].cat.codes
+
+
+data1["lug_boot"] = data1["lug_boot"].astype('category')
+data1["lug_boot"] = data1["lug_boot"].cat.codes
+
+data1["safety"] = data1["safety"].astype('category')
+data1["safety"] = data1["safety"].cat.codes
+
+data1["ClassValues"] = data1["ClassValues"].astype('category')
+data1["ClassValues"] = data1["ClassValues"].cat.codes
+
+#print(data1)
+################# KNN Classifier Code part 1 ####################################
+
+# Makes training and test sets
+
+# These are the other rows
+features = data1[["buying","maint","doors","persons","lug_boot","safety"]]
+
+#This is the row we want to predict, the targets
+targets = data1["ClassValues"]
+#print(features)
+#print(targets)
+
+
+
+# Quad 1    Quad 3      Quad 2          Quad 4
+train_data, test_data, train_targets, test_targets = train_test_split(features, targets, test_size=.3)
+
+# Create new classifier object
+classifier = KNeighborsClassifier(n_neighbors=3)
+
+
+# Train the classifier
+#               Quad 1      Quad 2
+classifier.fit(train_data,train_targets)
+
+# Make predictions of the test data
+#                                   Quad 3
+target_predict = classifier.predict(test_data)
+
+# Compute and print the accuracy    Compare to what qud 4 actually is
+accuracy = accuracy_score(test_targets,target_predict)
+
+#print(accuracy)
+################### Part 2 MGP Drops Missing Data #############################################
+
+data2 = data2.replace('?', nan)
+data2.dropna(inplace=True)
+print(data2)
+
+# Makes training and test sets
+
+# These are the other rows
+features = data2[["cylinders","displacement","horsepower","weight","acceleration","model","origin","car name"]]
+
+#This is the row we want to predict, the targets
+targets = data2["mpg"]
+
+# Train the classifier
+#               Quad 1      Quad 2
+classifier.fit(train_data,train_targets)
+
+# Make predictions of the test data
+#                                   Quad 3
+target_predict = classifier.predict(test_data)
+
+# Compute and print the accuracy    Compare to what qud 4 actually is
+accuracy = accuracy_score(test_targets,target_predict)
+print("Accuracy is: ")
+print(accuracy)
+
+
+##################### Part 3 regression ###########################################
+regr = KNeighborsRegressor(n_neighbors=3)
+
+min_max_scaler = preprocessing.MinMaxScaler()
+# Scales my Train_data
+train_data = min_max_scaler.fit_transform(train_data)
+# Scales the test_data also
+test_data = min_max_scaler.fit_transform(test_data)
+
+#Now we do the regr
+regr.fit(train_data, train_targets)
+predictions = regr.predict(test_data)
+accuracy3 = explained_variance_score(test_targets,target_predict)
+#print(accuracy3)
+#print(predictions)
+
+
+
+#
+# # gets data that is not a csv file
+# f = open("car.names","r")
+# contents =f.read()
+#print(contents)
+#data2= pd.read("car.names", header=None, skipinitialspace=True, na_values=["?"]) # Reads the file in my directory
+
+#print(data2)
+###############################################################################
+#car_data = "https://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data"
+#car_names = "https://archive.ics.uci.edu/ml/machine-learning-databases/car/car.names"
+
+#data1 = pd.read_csv(car_data)
+#print(data1)
+#data2 = pd.read_csv(car_names)
+#print(data2)
+###############################################################################
+
+
+
+
