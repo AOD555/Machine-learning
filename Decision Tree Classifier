@@ -1,0 +1,190 @@
+import pandas as pd
+import os
+from sklearn.neighbors import KNeighborsClassifier
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+import random
+import math
+#from scipy import stats
+from sklearn.metrics import accuracy_score
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.metrics import explained_variance_score
+from sklearn import preprocessing
+from numpy import nan
+from sklearn import tree
+from sklearn import preprocessing
+from sklearn import utils
+from sklearn import tree
+import graphviz
+
+####################################### data1 reading of data files##############################################
+names =['sepal_length', 'sepal_width', 'petal_length', 'petal_width','species']
+
+data1 = pd.read_csv("iris.data", header=None, skipinitialspace=True,
+                    names=names, na_values=["?"])
+# print(" The accuracy for data 1 is: ")
+# # print(data1)
+
+####################################### Turn data1 into category and cat.codes#############################################
+
+data1["species"] = data1["species"].astype('category')
+data1["species"] = data1["species"].cat.codes
+# print(data1)
+
+
+#################################### data2 reading of data files#################################################
+
+# This part is for part 2  We needed a regular experssion to make the headers line up. We need 2 white space r'\s+'
+names =["mpg","cylinders","displacement","horsepower","weight","acceleration","model","origin","car name"]
+data2 = pd.read_csv("auto-mpg.data", header=None, sep =r'\s+', skipinitialspace=True,
+                    names=names, na_values=["?"])
+# This helps us see how many columns we want to see
+pd.set_option('max_columns', 9)
+pd.set_option('max_rows', 392)
+
+############################### make data 2 into cat.codes############################################################
+
+data2["car name"] = data2["car name"].astype('category')
+data2["car name"] = data2["car name"].cat.codes
+
+#print(data2)
+
+#################################### data3 reading of data files#################################################
+names =["buying","maint","doors","persons","lug_boot","safety","ClassValues"]
+
+data3 = pd.read_csv("car.data", header=None, skipinitialspace=True,
+                    names=names, na_values=["?"]) # Reads the file in my directory
+
+
+############################# make data 3 into cat.codes#################################
+# (data3.dtypes) # Shows me what type of data this is
+
+data3["buying"] = data3["buying"].astype('category')
+data3["buying"] = data3["buying"].cat.codes
+
+data3["maint"] = data3["maint"].astype('category')
+data3["maint"] = data3["maint"].cat.codes
+
+data3["doors"] = data3["doors"].astype('category')
+data3["doors"] = data3["doors"].cat.codes
+
+data3["persons"] = data3["persons"].astype('category')
+data3["persons"] = data3["persons"].cat.codes
+
+
+data3["lug_boot"] = data3["lug_boot"].astype('category')
+data3["lug_boot"] = data3["lug_boot"].cat.codes
+
+data3["safety"] = data3["safety"].astype('category')
+data3["safety"] = data3["safety"].cat.codes
+
+data3["ClassValues"] = data3["ClassValues"].astype('category')
+data3["ClassValues"] = data3["ClassValues"].cat.codes
+
+#print(data3)
+
+################### Part 1 IRIS #############################################
+
+features = data1[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
+targets = data1['species']
+
+train_data, test_data, train_targets, test_targets = train_test_split(features, targets, test_size=.3)
+
+# This does the decision tree for a CLASSIFIER!
+classifier = classifier = tree.DecisionTreeClassifier()
+
+#                              Quad 1      Quad 2
+classifier = classifier.fit(train_data,train_targets)
+
+# Make predictions of the test data
+#                                    Quad 3
+target_predict = classifier.predict(test_data)
+
+# Compute and print the accuracy    Compare to what qud 4 actually is
+accuracy = accuracy_score(test_targets,target_predict)
+
+# print(data1)
+# print("\n the accuracy for 1 is ", accuracy)
+# # This does the decision tree for a CLASSIFIER!
+# classifier = classifier = tree.DecisionTreeClassifier()
+#
+# #                              Quad 1      Quad 2
+# classifier = classifier.fit(train_data,train_targets)
+#
+# # Make predictions of the test data
+# #                                    Quad 3
+# target_predict = classifier.predict(test_data)
+#
+# # Compute and print the accuracy    Compare to what qud 4 actually is
+# accuracy = accuracy_score(test_targets,target_predict)
+# print(" The accuracy for data 1 is: ")
+# print(accuracy)
+
+
+
+################### Part 2 MGP Drops Missing Data #############################################
+
+data2 = data2.replace('?', nan)
+data2.dropna(inplace=True)
+#print(data2)
+
+# These are the other rows
+features = data2[["cylinders", "displacement", "horsepower", "weight", "acceleration", "model", "origin", "car name"]]
+
+#This is the row we want to predict, the targets
+targets = data2["mpg"]
+
+# Quad 1    Quad 3      Quad 2          Quad 4                                                         THis picks up the 5th mixed set every time
+train_data, test_data, train_targets, test_targets = train_test_split(features, targets, test_size=.3,random_state=5)
+
+# We are using a different classifier, since we are using decision trees. IT USES REGRESSION!
+classifier = tree.DecisionTreeRegressor(random_state = 5)
+# data2 = data2.astype('int64')
+
+#print(data2)
+# print(data2.dtypes)
+print("\n Need to raise accuracy for part 2!!!\n")
+#print(data2)
+#                              Quad 1      Quad 2
+classifier = classifier.fit(train_data,train_targets)
+
+# Make predictions of the test data
+#                                    Quad 3
+target_predict = classifier.predict(test_data)
+# #Gives it a range of acceptable numbers with explained variance score.
+accuracy = explained_variance_score(test_targets,target_predict)
+print("Accuracy for data2 is: ", accuracy)
+
+
+################### Part 3 Type of cars #############################################
+
+features = data3[["buying","maint","doors","persons","lug_boot","safety"]]
+
+#This is the row we want to predict, the targets
+targets = data3["ClassValues"]
+
+# Quad 1    Quad 3      Quad 2          Quad 4
+train_data, test_data, train_targets, test_targets = train_test_split(features, targets, test_size=.3)
+
+# This does the decision tree for a CLASSIFIER!. We add tree so we can print a decision tree
+classifier = tree.DecisionTreeClassifier(criterion='entropy')
+print(classifier)
+
+#                              Quad 1      Quad 2
+classifier = classifier.fit(train_data,train_targets)
+
+dot_data = tree.export_graphviz(classifier, out_file=None)
+graph = graphviz.Source(dot_data)
+tree.plot_tree(graph)
+#print(tree.plot_tree(classifier))
+
+# Make predictions of the test data
+#                                    Quad 3
+target_predict = classifier.predict(test_data)
+
+# Compute and print the accuracy    Compare to what qud 4 actually is
+accuracy = accuracy_score(test_targets,target_predict)
+# print(" The accuracy for data 3 is: ")
+# print(accuracy)
+
