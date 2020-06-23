@@ -1,0 +1,78 @@
+#R version 3.4.4
+install.packages('e1071', dependencies = TRUE)
+library (e1071)
+
+
+print("Hello, world!")
+
+# Load our old friend, the Iris data set
+# Note that it is included in the default datasets library
+library(datasets)
+data(iris)
+print(iris)
+data2 <- read.csv("vowel.csv",head=TRUE, sep = ",")
+
+# Need to get the first two columns into numbers
+data2$Speaker <- factor(mydata$Speaker,
+levels = c(15),
+labels = c("red", "blue", "green"))
+
+
+
+# For your assignment, you'll need to read from a CSV file.
+# Conveniently, there is a read.csv() function that can be used like so:
+# myDataSet <- read.csv(fileName, head=TRUE, sep=",")
+
+# Partition the data into training and test sets
+# by getting a random 30% of the rows as the testRows
+allRows <- 1:nrow(iris)
+testRows <- sample(allRows, trunc(length(allRows) * 0.3))
+
+allRows2 <- 1:nrow(data2)
+testRows2 <- sample(allRows2, trunc(length(allRows2) * 0.3))
+# The test set contains all the test rows
+irisTest <- iris[testRows,]
+vowelTest <- data2[testRows2,]
+
+# The training set contains all the other rows
+irisTrain <- iris[-testRows,]
+vowelTrain <- data2[-testRows2,]
+
+
+
+
+
+# Train an SVM model
+# Tell it the attribute to predict vs the attributes to use in the prediction,
+#  the training data to use, and the kernal to use, along with its hyperparameters.
+#  Please note that "Species~." contains a tilde character, rather than a minus
+model <- svm(Species~., data = irisTrain, kernel = "radial", gamma = 0.001, cost = 10)
+print(vowelTrain)
+model2 <- svm(Class~., data = vowelTrain, kernel = "radial", gamma = -0.001, cost = 10)
+print("possible error?")
+
+# Use the model to make a prediction on the test set
+# Notice, we are not including the last column here (our target)
+prediction <- predict(model, irisTest[,-5])
+prediction2 <- predict(model2, vowelTest[,-13])
+
+# Produce a confusion matrix
+confusionMatrix <- table(pred = prediction, true = irisTest$Species)
+confusionMatrix2 <- table(pred = prediction, true = vowelTest$Class)
+
+# Calculate the accuracy, by checking the cases that the targets agreed
+agreement <- prediction == irisTest$Species
+accuracy <- prop.table(table(agreement))
+agreement2 <- prediction2 == vowelTest$Class
+accuracy2 <- prop.table(table(agreement2))
+
+
+# Print our results to the screen
+print(confusionMatrix)
+print(accuracy)
+print('its works')
+
+print(confusionMatrix2)
+print(accuracy2)
+print('yeet boiiiiii ')
+
